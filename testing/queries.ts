@@ -3,6 +3,7 @@ import { User } from "../models/user";
 import { Holding } from "../models/holding";
 
 const uri = "mongodb://localhost:27017";
+// TODO: create global singleton client
 const client = new MongoClient(uri);
 
 const db = client.db("tradingDB");
@@ -228,10 +229,42 @@ const addFunds = async (userId: ObjectId, amount: number) => {
 // 6. Withdraw funds
 const withdrawFunds = async (userId: ObjectId, amount: number) => {
   // Validate that the user has enough funds to withdraw
+  const user = await users.findOne(
+    { _id: userId },
+    { projection: { balance: 1 } }
+  );
+
+  if (!user) {
+    throw new Error(`User with ID ${userId} not found`);
+  }
+
+  if (user.balance < amount) {
+    throw new Error(
+      `User does not have sufficient balance to withdraw $${amount}`
+    );
+  }
 
   // Perform withdrawal
-}
+  await users.updateOne({ _id: userId }, { $inc: { balance: -amount } });
+  console.log(`Successfully withdrew $${amount}`);
+};
+// await withdrawFunds(user._id!, 10000);
 
 // 7. Update user info
+// We are assuming that `updatedValues` contains valid keys; schema validation can be added later if necessary
+const updateUserInfo = async (
+  userId: ObjectId,
+  updatedValues: Record<string, any>
+) => {
+  await users.updateOne(
+    { _id: userId },
+    { $set: updatedValues }
+  );
+  console.log("Successfully updated user info");
+};
+// await updateUserInfo(user._id!, {
+//   age: 24,
+//   email: "n1v3x@tamu.edu"
+// });
 
 client.close();
