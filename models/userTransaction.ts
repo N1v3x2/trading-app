@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { objectIdSchema } from "./objectId";
 
-const userTransactionSchema = z.object({
+export const userTransactionSchema = z.object({
   _id: objectIdSchema.optional(),
   user: objectIdSchema,
   date: z.date(),
@@ -11,6 +11,4 @@ const userTransactionSchema = z.object({
   shares: z.number().int().optional()
 });
 
-type UserTransaction = z.infer<typeof userTransactionSchema>;
-
-export { userTransactionSchema, UserTransaction }
+export type UserTransaction = z.infer<typeof userTransactionSchema>;

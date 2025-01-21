@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { objectIdSchema } from "./objectId";
 
-const UserSchema = z.object({
+export const UserSchema = z.object({
   // ObjectID must be hexidecimal and 24 chars long
   _id: objectIdSchema.optional(),
   name: z.string(),
@@ -10,6 +10,4 @@ const UserSchema = z.object({
   balance: z.number(),
 });
 
-type User = z.infer<typeof UserSchema>;
-
-export { UserSchema, User }
+export type User = z.infer<typeof UserSchema>;

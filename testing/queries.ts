@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { MongoClient, ObjectId } from "mongodb";
 import { User } from "../models/user";
 import { Holding } from "../models/holding";
@@ -254,17 +256,14 @@ const withdrawFunds = async (userId: ObjectId, amount: number) => {
 // We are assuming that `updatedValues` contains valid keys; schema validation can be added later if necessary
 const updateUserInfo = async (
   userId: ObjectId,
-  updatedValues: Record<string, any>
+  updatedValues: Partial<User>
 ) => {
-  await users.updateOne(
-    { _id: userId },
-    { $set: updatedValues }
-  );
+  await users.updateOne({ _id: userId }, { $set: updatedValues });
   console.log("Successfully updated user info");
 };
 // await updateUserInfo(user._id!, {
 //   age: 24,
-//   email: "n1v3x@tamu.edu"
+//   email: "n1v3x@tamu.edu",
 // });
 
 client.close();
