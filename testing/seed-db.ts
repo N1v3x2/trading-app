@@ -6,6 +6,9 @@ import { Holding } from "../models/holding";
 const uri = "mongodb://localhost:27017";
 const client = new MongoClient(uri);
 const db = client.db("tradingDB");
+const users = db.collection("users");
+const holdings = db.collection("holdings");
+const userTransactions = db.collection("userTransactions");
 
 // Drop all collections
 try {
@@ -15,8 +18,8 @@ try {
     console.log(`Dropped ${collection.name}`);
   }
   console.log("Successfully dropped all collections");
-} catch (error) {
-  console.log(error);
+} catch (err) {
+  console.error(err);
 }
 
 // Create collections
@@ -27,8 +30,8 @@ try {
   console.log("Created holdings collection");
   await db.createCollection("userTransactions");
   console.log("Created userTransactions collection");
-} catch (error) {
-  console.log(error);
+} catch (err) {
+  console.error(err);
 }
 
 // Seed collections
@@ -54,7 +57,6 @@ try {
       balance: 25000,
     },
   ];
-  const users = db.collection("users");
   await users.insertMany(seedUsers);
   console.log("Successfully seeded users");
 
@@ -100,7 +102,6 @@ try {
       shares: 72,
     },
   ];
-  const userTransactions = db.collection("userTransactions");
   await userTransactions.insertMany(seedTransactions);
   console.log("Successfully seeded userTransactions");
 
@@ -119,11 +120,23 @@ try {
       costBasis: 5000,
     },
   ];
-  const holdings = db.collection("holdings");
   await holdings.insertMany(seedHoldings);
   console.log("Successfully seeded holdings");
-} catch (error) {
-  console.log(error);
+} catch (err) {
+  console.error(err);
+}
+
+// Create indexes
+try {
+  const users = db.collection("users");
+  await users.createIndex({ email: 1 }, { unique: true });
+  console.log("Successfully created index for users on email_1");
+  await holdings.createIndex({ user: 1, tickerSymbol: 1 });
+  console.log("Successfully created index for holdings on user_1_tickerSymbol_1");
+  await userTransactions.createIndex({ user: 1, type: 1, date: -1 });
+  console.log("Successfully created index for userTransactions on user_1_type_1_date-1")
+} catch (err) {
+  console.error(err);
 }
 
 client.close();
